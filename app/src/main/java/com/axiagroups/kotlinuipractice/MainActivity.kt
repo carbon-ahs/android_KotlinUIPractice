@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.axiagroups.kotlinuipractice.ui.theme.KotlinUIPracticeTheme
+import com.axiagroups.kotlinuipractice.viewModels.MainActivityViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApp {
-                MainContent()
+                MainContent(MainActivityViewModel())
             }
         }
     }
@@ -39,19 +41,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(content: @Composable () -> Unit) {
     KotlinUIPracticeTheme {
-        MainContent()
+        MainContent(MainActivityViewModel())
     }
 }
 
 @Composable
-fun MainContent() {
-    var counter by rememberSaveable { mutableStateOf(0) }
-    var incrementCounter = {
-        counter += 1
-    }
-    var decrementCounter = {
-        counter -= 1
-    }
+fun MainContent(mainActivityViewModel: MainActivityViewModel?) {
+    mainActivityViewModel?.counter?.observeAsState()?.value.let {  }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -66,11 +63,11 @@ fun MainContent() {
 
         ) {
 
-            Button(onClick = { incrementCounter.invoke() }, modifier = Modifier.padding(8.dp)) {
+            Button(onClick = { mainActivityViewModel?.incrementCounter?.invoke() }, modifier = Modifier.padding(8.dp)) {
                 Text(text = "+")
             }
-            Text(text = "${counter}")
-            Button(onClick = { decrementCounter.invoke() }, modifier = Modifier.padding(8.dp)) {
+            Text(text = "${mainActivityViewModel?.counter?.value}")
+            Button(onClick = { mainActivityViewModel?.decrementCounter?.invoke() }, modifier = Modifier.padding(8.dp)) {
                 Text(text = "-")
             }
 
@@ -83,6 +80,6 @@ fun MainContent() {
 @Composable
 fun DefaultPreview() {
     MyApp {
-        MainContent()
+        MainContent(MainActivityViewModel())
     }
 }
